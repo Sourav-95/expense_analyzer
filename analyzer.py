@@ -1,6 +1,6 @@
 import sys
 import os
-from src.components.read_csv import extract_transaction_data
+from src.components.ETL_manager import extract_transaction_data
 
 input_file = r'/raw_file/915010018577756.csv'
 input_file = os.getcwd()+input_file
