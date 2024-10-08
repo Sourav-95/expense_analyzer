@@ -2,6 +2,7 @@ import csv
 import os
 import pandas as pd
 import pdfplumber
+from src.exception import CustomException
 from src.inputs.column_structure import get_cols
 
 class DataIngestor():
@@ -45,13 +46,36 @@ class DataIngestor():
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
 
-    def data_cleaner(data: pd.DataFrame) -> pd.DataFrame:
+    @classmethod
+    def data_cleaner(cls, data: pd.DataFrame):
         if data.isnull().values.any():
-            data = data[~data['Date'].astype(str).str.contains(r'\*', na=False)]
             data = data.dropna(subset='Date', axis=0)
-            return data
-        else:
-            return data
+        if '*' in data:
+            data = data[~data['Date'].astype(str).str.contains(r'\*', na=False)]
+        if 'ChqNo' in data.columns:
+            data = data.drop(columns='ChqNo', axis=1)
+        
+        return data
+    
+    @classmethod
+    def rearrange_clean_features(cls, data:pd.DataFrame, data_no, col_list1:list, col_list2:list):
+        set1 = set(col_list1)
+        set2 = set(col_list2)
+        non_matching_col_names = set1.symmetric_difference(set2)
+        
+        try:
+            if data_no == 1:
+                drop_colist_1 = [cols for cols in non_matching_col_names if cols in col_list1]
+                data = data.drop(columns=drop_colist_1, axis=1)
+            elif data_no == 2:
+                drop_colist_2 = [cols for cols in non_matching_col_names if cols in col_list2]
+                data = data.drop(columns=drop_colist_2, axis=1)
+        except CustomException as e:
+            raise (f'Error occured as : \n {e}')
+
+        data = DataIngestor.data_cleaner(data=data)
+        return data
+
         
     @classmethod
     def rearrange_columns(cls, data):
@@ -64,7 +88,7 @@ class DataIngestor():
 
         drop_tab2_col = [cols for cols in non_matching_words if cols in get_cols.col2()]
         data = data.drop(drop_tab1_col, axis = 1)
-                                                                                              
+
 # class DataProcessor():
 #     @classmethod
 #     def remap_transactions(cls, data, transaction_col_name: str):
