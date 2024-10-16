@@ -1,6 +1,5 @@
-import pandas as pd
 
-def map_subcategory(data):
+def map_subcategory():
     """
     Creates a keywords dictionary based on a list of indices.
     Args: Index_list: A list of indices.
@@ -18,7 +17,7 @@ def map_subcategory(data):
     "Water" : [], 
     "Electricity" : [], 
     "Maid" : [],
-    "Personal One Time" : [], 
+    "Personal One Time" : ['ECS Txn Chrgs Incl GST'], 
     "Personal Recurring" : ['hair c', 'hair cut', 'hair cut', 'ECS Txn Chrgs'], 
     "Music" : [],
     "Entertainment" : [], 
@@ -36,14 +35,17 @@ def map_subcategory(data):
     "AutoCab" : [],
     "Tea & Others" : ['tea', 'IMPERIAL KOARAMANGALA', 'HARISH', 'GYANESWAR UPADHAYA', 
                       'KRISHANA KUMAR YADAV', 'GANAPATHI N NAIK ', 'SRINIDHI SAGAR FOODLI', 
-                      'MEGHARAJ H C', 'MAHENDRA SHETTY'], 
+                      'MEGHARAJ H C', 'MAHENDRA SHETTY', 'sri annapoorneshwary', 'MOHAMAD N.',
+                      'GANAPATHI N NAIK'], 
     "Others" : ['RAMBABU YADAV'],
     "Snacks" : ['food', 'RAMKUMARGUPTASOMOOLC', 'fuchka'], 
     "FoodRegular" : ['Mr S Chandran', 'food'], 
     "Office Food" : ['Hunger', 'Cake way'], 
     "Cooking Gas" : [],
     "Medical" : ['Pharma', 'medici'],
-    "Flower" : ['flower', 'MANIGANDAN', ], 
-    "PujaOne" : ['puja', ],
-    "Miscellaneous" : []
+    "Flower" : ['flower', 'MANIGANDAN'], 
+    "PujaOne" : ['puja'],
+    "Miscellaneous" : [],
+    "Fund Transfer" : ['Remitter']
     }
+    return subcategory_dropdown

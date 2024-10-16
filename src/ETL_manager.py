@@ -4,6 +4,7 @@ import pandas as pd
 import pdfplumber
 from src.exception import CustomException
 from src.inputs.column_structure import get_cols
+from src.inputs import mapping
 
 class DataIngestor():
     @classmethod
@@ -14,7 +15,7 @@ class DataIngestor():
             file_ext = os.path.splitext(file_path)[-1].lower()                  # Determine the file extension
             
 
-            #file reader
+            # File reader
             if file_ext == '.csv':
                 data = pd.read_csv(file_path, skiprows=20, names=col_names)
             elif file_ext == '.xlsx':
@@ -58,16 +59,24 @@ class DataIngestor():
         return data
     
     @classmethod
-    def rearrange_clean_features(cls, data:pd.DataFrame, data_no, col_list1:list, col_list2:list):
+    def clean_features(cls, data:pd.DataFrame, data_name:str):
+        '''
+            Step 1: This function removes the features which are not commonn in both the data's.
+            Step 2: Next it calls "data_cleaner" function which removes null values, asteriks (*) & 
+                    drop the feature 'Chqno'
+        '''
+        col_list1 = get_cols.col1()                 # Getting Column names of Statement 1 (Expense Account)
+        col_list2 = get_cols.col2()                 # Getting Column names of Statement 2 (Salary Account)
+
         set1 = set(col_list1)
         set2 = set(col_list2)
         non_matching_col_names = set1.symmetric_difference(set2)
         
         try:
-            if data_no == 1:
+            if data_name == 'Expense':
                 drop_colist_1 = [cols for cols in non_matching_col_names if cols in col_list1]
                 data = data.drop(columns=drop_colist_1, axis=1)
-            elif data_no == 2:
+            elif data_name == 'Salary':
                 drop_colist_2 = [cols for cols in non_matching_col_names if cols in col_list2]
                 data = data.drop(columns=drop_colist_2, axis=1)
         except CustomException as e:
@@ -75,19 +84,6 @@ class DataIngestor():
 
         data = DataIngestor.data_cleaner(data=data)
         return data
-
-        
-    @classmethod
-    def rearrange_columns(cls, data):
-        set1 = set(get_cols.col1())
-        set2 = set(get_cols.col2())
-        non_matching_words = set1.symmetric_difference(set2)
-        
-        drop_tab1_col = [cols for cols in non_matching_words if cols in get_cols.col1()]
-        data = data.drop(drop_tab1_col, axis = 1)
-
-        drop_tab2_col = [cols for cols in non_matching_words if cols in get_cols.col2()]
-        data = data.drop(drop_tab1_col, axis = 1)
 
 # class DataProcessor():
 #     @classmethod
@@ -136,6 +132,8 @@ class DataProcessor():
 
         # Create a new column 'exp_name' with the last word or None if 'UPI'
         data['exp_name'] = data[transaction_col_name].apply(lambda x: extract_last_word(x))
+        data[transaction_col_name] = data[transaction_col_name].str.replace('UPI', '', regex=False)
+        data[transaction_col_name] = data[transaction_col_name].str.strip()
 
         # Reorder the columns to place 'exp_name' right after 'transaction_col_name'
         cols = list(data.columns)
@@ -145,3 +143,25 @@ class DataProcessor():
         data = data[cols]
 
         return data
+    
+    # Create a reverse mapping function
+    def map_expense_group(data):
+        mapping_ = mapping.map_subcategory()
+        def map_defined_expense(get_columns, mapping_dict):
+            for group, records in mapping_dict.items():
+                if get_columns in records:
+                    return group
+            return 'NA'  # Default group for unmapped records
+        
+        data['exp_group'] = data['exp_name'].apply(lambda x:map_defined_expense(x,mapping_dict=mapping_))
+
+
+        if any(data['exp_group']=='NA'):
+            data['exp_maps'] = data['Particulars'].apply(lambda x:map_defined_expense(x,mapping_dict=mapping_))
+
+        #replace NA with actual NaN values
+        data.replace('NA', pd.NA, inplace=True)
+        data['exp_maps'] = data['exp_maps'].fillna(data['exp_group'])
+        data = data.drop(columns = 'exp_group', axis=1)
+        return data
+        
