@@ -1,7 +1,7 @@
 import sys
 import os
 import pandas as pd
-import pdfplumber
+import numpy as np
 from src.exception import CustomException
 from src.ETL_manager import DataIngestor
 from src.ETL_manager import DataProcessor
@@ -12,6 +12,7 @@ import warnings
 import logging
 warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
 class DataTransformer():
     def __init__(self, input_file:str, col_name:list, data_name:str, 
@@ -35,17 +36,16 @@ class DataTransformer():
                                               transaction_col_name=self.transaction_col_name
                                               )
         logging.info(f'DATA REMAP TRANSACTION Completed..........')
+
         df = DataProcessor.map_expense_group(df)
-
-
         logging.info(f'Mapping Expense Group.....................')
+
+        # Call __rearrange_cols__ to reorder columns
+        df = DataProcessor.__rearrange_cols__(df)
+        logging.info(f'Columns Reordered.........................')
+
+        # removing 'Value Dt'
+        if 'Value Dt' in df.columns:
+            df.drop(columns = 'Value Dt', axis=1, inplace = True)
+        
         return df
-
-data_trasformer = DataTransformer(input_file='/raw_file/exp_statement.csv',
-                                  col_name=get_cols.col1(),
-                                  data_name='Expense',
-                                  transaction_col_name='Particulars'
-                                  )
-
-transform_df = data_trasformer.transform_data_to_df()
-logging.info(f'DATA TRANSFORMATION Done')

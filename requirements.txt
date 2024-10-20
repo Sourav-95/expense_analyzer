@@ -2,4 +2,8 @@ numpy
 pandas
 pdfplumber
 openpyxl
+gspread
+gspread_dataframe
+# service_account
+oauth2client
 -e .

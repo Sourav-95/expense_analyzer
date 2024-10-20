@@ -24,7 +24,7 @@ def map_subcategory():
     "Father" : [], 
     "Tour" : [],
     "Restuarant" : ['KITCHEN', 'barkas', 'swiggy', 'zomato', 'PULAK DAS', 'Rais  Anwer', 'Zomato'], 
-    "Wife Recurring" : ['clip', 'wife', 'dress'], 
+    "Family Monthly" : ['clip', 'wife', 'dress'], 
     "Birds" : ['fruits', 'V SANTHOSH'], 
     "Extras" : [],
     "Grocery Regular" : ['Blinkit', 'Blinki', 'Mr SATISH KUMAR N', 'ASHRAF U K', 'grocer', 'grocery'], 
@@ -48,7 +48,7 @@ def map_subcategory():
     "PujaOne" : ['puja'],
     "Miscellaneous" : [],
     "Fund Transfer" : ['Remitter', 'BANK'],
-    "Savings": ['INDUSIND', 'save', 'LIMITED(RAZORPAY)/', 'LIMITED(ATOMTECH)/'],
+    "Savings": ['INDUSIND', 'save', 'LIMITED(RAZORPAY)/', 'LIMITED(ATOMTECH)/', 'gold'],
     "Bank Charges" : ['GST'],
     "Donation": ['Donati']
     }
