@@ -9,6 +9,7 @@ __pycache__/
 # raw_files (confidential)
 raw_files/
 client_token_cred.json
+clientKey.json
 
 # Distribution / packaging
 .Python
