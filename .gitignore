@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 # raw_files (confidential)
-raw_files/
+raw_file/
 client_token_cred.json
 clientKey.json
 clientKey.json
